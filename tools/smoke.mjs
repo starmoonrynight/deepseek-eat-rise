@@ -21,7 +21,8 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ORDER = [
   'js/expr.js', 'js/rules.js', 'js/map.js', 'js/engine.js', 'js/sprites.js', 'js/fx.js',
-  'js/render.js', 'js/audio.js', 'js/levels/act1.js', 'js/levels/act2.js', 'js/verify.js',
+  'js/render.js', 'js/audio.js', 'js/levelkit.js', 'js/levels/act1.js', 'js/levels/act2.js',
+  'js/levels/act3.js', 'js/levels/act4.js', 'js/verify.js',
   'js/levels.js', 'js/ui.js', 'js/input.js', 'js/main.js'
 ];
 
@@ -130,7 +131,9 @@ const Image_ = function () {
     get: () => _src,
     set: (v) => {
       _src = String(v);
-      const info = IMG_SIZE[_src] || (String(_src).indexOf('data:image') === 0 ? { w: 32, h: 32 } : null);
+      /* 真实浏览器会忽略 ?v= 缓存参数，桩也要一样处理 */
+      const base = _src.split('?')[0];
+      const info = IMG_SIZE[base] || (_src.indexOf('data:image') === 0 ? { w: 32, h: 32 } : null);
       if (!info) { try { if (this.onerror) this.onerror(); } catch (e) { } return; }
       this.naturalWidth = info.w; this.naturalHeight = info.h;
       this.width = info.w; this.height = info.h;
@@ -222,6 +225,25 @@ function judgeText() {
 settle(14);
 check('启动后进入第 1 关', G.debugState().level === 1 && G.debugState().state === 'intro', JSON.stringify({ level: G.debugState().level, state: G.debugState().state }));
 check('开场弹出关卡介绍', !byId['overlay']._s.hidden);
+
+/* ── 地图缩放 ─────────────────────────────────────────── */
+const zoomT0 = G.debugState().tile;
+check('默认每格够大（一屏约 16×9 格）', zoomT0 > 55 && zoomT0 < 76, Math.round(zoomT0) + ' px/格');
+key('keydown', '+'); key('keyup', '+');
+const zoomT1 = G.debugState().tile;
+key('keydown', '-'); key('keyup', '-');
+const zoomT2 = G.debugState().tile;
+check('按 + 放大 / 按 − 缩小', zoomT1 > zoomT0 + 3 && Math.abs(zoomT2 - zoomT0) < 3,
+  Math.round(zoomT0) + ' → ' + Math.round(zoomT1) + ' → ' + Math.round(zoomT2));
+check('缩放偏好会记住', /^[0-9.]+$/.test(String(window_.localStorage.getItem('dsf.fish.zoom') || '')),
+  String(window_.localStorage.getItem('dsf.fish.zoom')));
+check('全图模式仍可用（Z 切过去再切回来）', (() => {
+  key('keydown', 'z'); key('keyup', 'z');
+  const fit = G.debugState().tile;
+  key('keydown', 'z'); key('keyup', 'z');
+  return fit < zoomT0 && G.debugState().tile > 55;
+})(), '');
+
 clickAct('[data-act="start"]');
 settle(4);
 check('点开始后进入 playing', G.debugState().state === 'playing');
@@ -488,6 +510,7 @@ check('HUD 里没有撤销按钮', srcOf('index.html').indexOf('btn-undo') < 0);
 check('UI / 输入 / 主循环里都没有撤销入口',
   !/\bundo\b/i.test(srcOf('js/ui.js')) && !/\bundo\b/i.test(srcOf('js/input.js')) && !/\bundo\b/i.test(srcOf('js/main.js')));
 check('失败面板里没有撤销按钮', srcOf('js/ui.js').indexOf('撤销一步') < 0);
+check('底部提示条不再宣传撤销键', srcOf('js/main.js').indexOf('U 撤销') < 0 && srcOf('js/input.js').indexOf('U 撤销') < 0);
 check('门的标签不再按"能不能过"变色', srcOf('js/render.js').indexOf('eng.value >= d.req') < 0);
 check('气泡里不再出现判定/结果符号', !/✅|⛔/.test(srcOf('js/render.js')));
 

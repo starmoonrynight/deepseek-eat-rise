@@ -372,6 +372,25 @@
     return bad;
   }
 
+  /** 一扇门的「物理下限」：能让这扇门成立的最小数值。
+      门有两条硬规则：① 过完一定减少；② 过门不能把自己算死（结果 > 0）。
+      返回满足这两条的最小 x —— 也就是这扇门的极限数值。
+      用途：不在最优解路线上的门（没有"到达值"可反推）用这个兜底，
+      否则门槛会退化成 0，变成"随便什么数值都能过、过完就死"的陷阱门。 */
+  function doorFloor(el, hi) {
+    hi = hi || 40000;
+    function okFrom(x0) {
+      var step = Math.max(1, Math.floor((hi - x0) / 240));
+      for (var v = x0; v <= hi; v += step) {
+        var y = doorValue(v, el);
+        if (!(isFinite(y) && y < v && y > 0)) return false;
+      }
+      return true;
+    }
+    for (var x = 1; x <= 400; x++) if (okFrom(x)) return x;
+    return 400;
+  }
+
   G.rules = {
     TYPES: TYPES,
     ORDER: ORDER,
@@ -381,6 +400,7 @@
     doorFormula: doorFormula,
     doorTier: doorTier,
     doorTierName: doorTierName,
+    doorFloor: doorFloor,
     describe: describe,
     formula: formula,
     checkElement: checkElement,

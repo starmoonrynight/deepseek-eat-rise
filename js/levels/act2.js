@@ -88,9 +88,9 @@
       }
     ],
     tips: [
-      '先把前厅的两碗饭吃完，再去撞第一扇门',
-      '每个房间的白饭不必吃光，够过门就行',
-      '门通过就消失，走错房间只能重开'
+      '第一扇门只要凑够门槛就能过，前厅不必吃空',
+      '「先开小门、回头再吃」是本关的正解：门开了就一直是通路',
+      '留下的高价值白饭，等后面的倍率吃到手再回来吃最划算'
     ],
     fill: { type: 'rice', value: 1, density: 0.16, clearance: 1 },
     rooms: [
@@ -105,14 +105,14 @@
       { id: 'r8', name: '终点塔', shape: 'cross', at: [36, 34], wh: [9, 10] }
     ],
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 3, req: 6, label: '第一道门' } },
-      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'sub', amount: 6, req: 14, label: '第二道门' } },
-      { a: 'r2', b: 'r5', door: { id: 'door_2_5', type: 'door', op: 'div', divisor: 2, req: 18, label: '除法门' } },
-      { a: 'r5', b: 'r4', door: { id: 'door_5_4', type: 'door', op: 'sub', amount: 9, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r4', b: 'r3', door: { id: 'door_4_3', type: 'door', op: 'sub', amount: 11, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r3', b: 'r6', door: { id: 'door_3_6', type: 'door', op: 'sub', amount: 15, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'div', divisor: 2, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'sub', amount: 12, req: 'auto', reqFrac: 0.8 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 3, req: 'auto', label: '第一道门' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'sub', amount: 6, req: 'auto', label: '第二道门' } },
+      { a: 'r2', b: 'r5', door: { id: 'door_2_5', type: 'door', op: 'div', divisor: 2, req: 'auto', label: '除法门' } },
+      { a: 'r5', b: 'r4', door: { id: 'door_5_4', type: 'door', op: 'sub', amount: 9, req: 'auto' } },
+      { a: 'r4', b: 'r3', door: { id: 'door_4_3', type: 'door', op: 'sub', amount: 11, req: 'auto' } },
+      { a: 'r3', b: 'r6', door: { id: 'door_3_6', type: 'door', op: 'sub', amount: 15, req: 'auto' } },
+      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'div', divisor: 2, req: 'auto' } },
+      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'sub', amount: 12, req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a', room: 'r0', at: [8, 2], type: 'rice', value: 3 },
@@ -131,9 +131,9 @@
     ],
     start: { room: 'r0', at: [2, 2] },
     solution: [
-      'rice_a', 'rice_b', 'door_0_1', 'claude_a', 'rice_c', 'door_1_2', 'token_a',
-      'door_2_5', 'user_a', 'door_5_4', 'claude_b', 'bowl_b', 'door_4_3', 'token_b',
-      'rice_d', 'door_3_6', 'claude_c', 'door_6_7', 'rice_e', 'door_7_8', 'goal'
+      'rice_a', 'door_0_1', 'rice_c', 'door_1_2', 'door_2_5', 'token_a', 'user_a', 'door_5_4', 'bowl_b',
+      'door_4_3', 'door_3_6', 'door_6_7', 'rice_e', 'rice_d', 'claude_a', 'rice_b', 'claude_b', 'claude_c',
+      'door_7_8', 'goal'
     ]
   });
 
@@ -178,7 +178,7 @@
       }
     ],
     tips: [
-      '先吃复利厅的饭，再撞第一扇门',
+      '倍乘要留给后面的大额白饭：先拿倍率，再回头吃前面的饭',
       'token 不看你现在多少，进门顺序错了数值就崩',
       '终点门槛就是最优解的数值，差一点都进不去'
     ],
@@ -195,14 +195,14 @@
       { id: 'r8', name: '终点阁', shape: 'rect', c: 2, r: 2, wh: [10, 10] }
     ]),
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 3, req: 8, label: '减法门' } },
-      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'sub', amount: 5, req: 13, label: '减法门' } },
-      { a: 'r2', b: 'r5', door: { id: 'door_2_5', type: 'door', op: 'sub', amount: 7, req: 18, label: '减法门' } },
-      { a: 'r5', b: 'r4', door: { id: 'door_5_4', type: 'door', op: 'sub', amount: 8, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r4', b: 'r3', door: { id: 'door_4_3', type: 'door', op: 'sub', amount: 12, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r3', b: 'r6', door: { id: 'door_3_6', type: 'door', op: 'sub', amount: 20, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'sub', amount: 15, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'div', divisor: 2, req: 'auto', reqFrac: 0.8 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 3, req: 'auto', label: '减法门' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'sub', amount: 5, req: 'auto', label: '减法门' } },
+      { a: 'r2', b: 'r5', door: { id: 'door_2_5', type: 'door', op: 'sub', amount: 7, req: 'auto', label: '减法门' } },
+      { a: 'r5', b: 'r4', door: { id: 'door_5_4', type: 'door', op: 'sub', amount: 8, req: 'auto' } },
+      { a: 'r4', b: 'r3', door: { id: 'door_4_3', type: 'door', op: 'sub', amount: 12, req: 'auto' } },
+      { a: 'r3', b: 'r6', door: { id: 'door_3_6', type: 'door', op: 'sub', amount: 20, req: 'auto' } },
+      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'sub', amount: 15, req: 'auto' } },
+      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'div', divisor: 2, req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a', room: 'r0', at: [4, 2], type: 'rice', value: 4 },
@@ -220,9 +220,9 @@
     ],
     start: { room: 'r0', at: [1, 1] },
     solution: [
-      'rice_a', 'claude_a', 'door_0_1', 'token_a', 'door_1_2', 'claude_b', 'door_2_5',
-      'user_a', 'door_5_4', 'token_b', 'door_4_3', 'claude_c', 'rice_b', 'door_3_6',
-      'token_c', 'bowl_a', 'door_6_7', 'token_d', 'door_7_8', 'goal'
+      'rice_a', 'door_0_1', 'token_a', 'claude_a', 'door_1_2', 'door_2_5', 'user_a', 'door_5_4', 'token_b',
+      'door_4_3', 'door_3_6', 'door_6_7', 'door_7_8', 'token_d', 'rice_b', 'bowl_a', 'claude_b', 'claude_c',
+      'goal'
     ]
   });
 
@@ -288,15 +288,15 @@
       { id: 'r9', name: '海底门', shape: 'rect', c: 2, r: 2, wh: [14, 14] }
     ]),
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 12, req: 30, label: '减法门' } },
-      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'expr', expr: 'clamp(x, 0, 50)', req: 62, label: '封顶门' } },
-      { a: 'r2', b: 'r3', door: { id: 'door_2_3', type: 'door', op: 'sub', amount: 25, req: 90, label: '减法门' } },
-      { a: 'r3', b: 'r6', door: { id: 'door_3_6', type: 'door', op: 'div', divisor: 3, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r6', b: 'r5', door: { id: 'door_6_5', type: 'door', op: 'expr', expr: 'x / 3 + 12', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r5', b: 'r4', door: { id: 'door_5_4', type: 'door', op: 'expr', expr: 'clamp(x, 0, 90)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r4', b: 'r7', door: { id: 'door_4_7', type: 'door', op: 'sub', amount: 40, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'div', divisor: 4, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r8', b: 'r9', door: { id: 'door_8_9', type: 'door', op: 'sub', amount: 20, req: 'auto', reqFrac: 0.8 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 12, req: 'auto', label: '减法门' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'expr', expr: 'clamp(x, 0, 50)', req: 'auto', label: '封顶门' } },
+      { a: 'r2', b: 'r3', door: { id: 'door_2_3', type: 'door', op: 'sub', amount: 25, req: 'auto', label: '减法门' } },
+      { a: 'r3', b: 'r6', door: { id: 'door_3_6', type: 'door', op: 'div', divisor: 3, req: 'auto' } },
+      { a: 'r6', b: 'r5', door: { id: 'door_6_5', type: 'door', op: 'expr', expr: 'x / 3 + 12', req: 'auto' } },
+      { a: 'r5', b: 'r4', door: { id: 'door_5_4', type: 'door', op: 'expr', expr: 'clamp(x, 0, 90)', req: 'auto' } },
+      { a: 'r4', b: 'r7', door: { id: 'door_4_7', type: 'door', op: 'sub', amount: 40, req: 'auto' } },
+      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'div', divisor: 4, req: 'auto' } },
+      { a: 'r8', b: 'r9', door: { id: 'door_8_9', type: 'door', op: 'sub', amount: 20, req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a', room: 'r0', at: [4, 2], type: 'rice', value: 6 },
@@ -316,10 +316,9 @@
     ],
     start: { room: 'r0', at: [1, 1] },
     solution: [
-      'rice_a', 'rice_b', 'claude_a', 'door_0_1', 'token_a', 'bowl_a', 'door_1_2',
-      'claude_b', 'door_2_3', 'rice_c', 'door_3_6', 'user_a', 'token_b', 'door_6_5',
-      'claude_c', 'door_5_4', 'rice_d', 'door_4_7', 'claude_d', 'rice_e', 'door_7_8',
-      'door_8_9', 'goal'
+      'rice_a', 'rice_b', 'claude_a', 'door_0_1', 'token_a', 'door_1_2', 'door_2_3', 'door_3_6', 'rice_c',
+      'door_6_5', 'bowl_a', 'user_a', 'claude_b', 'door_5_4', 'door_4_7', 'door_7_8', 'token_b', 'rice_d',
+      'rice_e', 'claude_c', 'claude_d', 'door_8_9', 'goal'
     ]
   });
 
@@ -398,17 +397,17 @@
       { id: 'r11', name: '十字终', shape: 'cross', c: 3, r: 2, wh: [11, 11] }
     ]),
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 4, req: 18, label: '减法门' } },
-      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'expr', expr: 'x - 20 - mod(x, 32)', req: 35, label: '余数门' } },
-      { a: 'r2', b: 'r3', door: { id: 'door_2_3', type: 'door', op: 'sub', amount: 30, req: 80, label: '减法门' } },
-      { a: 'r3', b: 'r4', door: { id: 'door_3_4', type: 'door', op: 'expr', expr: 'x - 12 - mod(x, 7)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r4', b: 'r5', door: { id: 'door_4_5', type: 'door', op: 'sub', amount: 15, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r5', b: 'r6', door: { id: 'door_5_6', type: 'door', op: 'div', divisor: 2, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'expr', expr: 'clamp(x, 0, 60)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'sub', amount: 35, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r8', b: 'r9', door: { id: 'door_8_9', type: 'door', op: 'expr', expr: 'x / 3 + 10', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r9', b: 'r10', door: { id: 'door_9_10', type: 'door', op: 'sub', amount: 45, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r10', b: 'r11', door: { id: 'door_10_11', type: 'door', op: 'expr', expr: 'x - mod(x, 13) - 20', req: 'auto', reqFrac: 0.8 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 4, req: 'auto', label: '减法门' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'expr', expr: 'x - 20 - mod(x, 32)', req: 'auto', label: '余数门' } },
+      { a: 'r2', b: 'r3', door: { id: 'door_2_3', type: 'door', op: 'sub', amount: 30, req: 'auto', label: '减法门' } },
+      { a: 'r3', b: 'r4', door: { id: 'door_3_4', type: 'door', op: 'expr', expr: 'x - 12 - mod(x, 7)', req: 'auto' } },
+      { a: 'r4', b: 'r5', door: { id: 'door_4_5', type: 'door', op: 'sub', amount: 15, req: 'auto' } },
+      { a: 'r5', b: 'r6', door: { id: 'door_5_6', type: 'door', op: 'div', divisor: 2, req: 'auto' } },
+      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'expr', expr: 'clamp(x, 0, 60)', req: 'auto' } },
+      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'sub', amount: 35, req: 'auto' } },
+      { a: 'r8', b: 'r9', door: { id: 'door_8_9', type: 'door', op: 'expr', expr: 'x / 3 + 10', req: 'auto' } },
+      { a: 'r9', b: 'r10', door: { id: 'door_9_10', type: 'door', op: 'sub', amount: 45, req: 'auto' } },
+      { a: 'r10', b: 'r11', door: { id: 'door_10_11', type: 'door', op: 'expr', expr: 'x - mod(x, 13) - 20', req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a', room: 'r0', at: [3, 2], type: 'rice', value: 5 },
@@ -432,10 +431,10 @@
     ],
     start: { room: 'r0', at: [1, 1] },
     solution: [
-      'rice_a', 'rice_b', 'claude_a', 'door_0_1', 'user_a', 'rice_c', 'door_1_2',
-      'token_a', 'claude_b', 'door_2_3', 'token_b', 'door_3_4', 'user_b', 'door_4_5',
-      'token_c', 'rice_d', 'door_5_6', 'claude_c', 'door_6_7', 'user_c', 'door_7_8',
-      'token_d', 'door_8_9', 'claude_e', 'rice_e', 'door_9_10', 'token_e', 'door_10_11', 'goal'
+      'rice_a', 'door_0_1', 'rice_c', 'rice_b', 'claude_a', 'door_1_2', 'user_a', 'claude_b', 'door_2_3',
+      'door_3_4', 'door_4_5', 'door_5_6', 'token_c', 'user_b', 'door_6_7', 'door_7_8', 'door_8_9', 'user_c',
+      'token_a', 'rice_e', 'claude_e', 'rice_d', 'claude_c', 'door_9_10', 'door_10_11', 'token_e', 'token_d',
+      'goal'
     ]
   });
 
@@ -518,21 +517,21 @@
       { id: 'r15', name: '塔顶', shape: 'rect', c: 0, r: 3, wh: [14, 14] }
     ]),
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 10, req: 30, label: '减法门' } },
-      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'expr', expr: 'x - digitSum(x)', req: 34, label: '数位门' } },
-      { a: 'r2', b: 'r3', door: { id: 'door_2_3', type: 'door', op: 'sub', amount: 25, req: 70, label: '减法门' } },
-      { a: 'r3', b: 'r4', door: { id: 'door_3_4', type: 'door', op: 'expr', expr: 'x - gcd(x, 36)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r4', b: 'r5', door: { id: 'door_4_5', type: 'door', op: 'div', divisor: 2, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r5', b: 'r6', door: { id: 'door_5_6', type: 'door', op: 'expr', expr: 'x - digitSum(x) - 20', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'expr', expr: 'x - gcd(x, 24)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'sub', amount: 20, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r8', b: 'r9', door: { id: 'door_8_9', type: 'door', op: 'expr', expr: 'x - digitSum(x) * 4', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r9', b: 'r10', door: { id: 'door_9_10', type: 'door', op: 'expr', expr: 'x - gcd(x, 45)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r10', b: 'r11', door: { id: 'door_10_11', type: 'door', op: 'div', divisor: 3, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r11', b: 'r12', door: { id: 'door_11_12', type: 'door', op: 'expr', expr: 'x - digitSum(x) * 2', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r12', b: 'r13', door: { id: 'door_12_13', type: 'door', op: 'sub', amount: 100, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r13', b: 'r14', door: { id: 'door_13_14', type: 'door', op: 'expr', expr: 'x - gcd(x, 48)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r14', b: 'r15', door: { id: 'door_14_15', type: 'door', op: 'expr', expr: 'x - digitSum(x) * 5', req: 'auto', reqFrac: 0.8 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 10, req: 'auto', label: '减法门' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'expr', expr: 'x - digitSum(x)', req: 'auto', label: '数位门' } },
+      { a: 'r2', b: 'r3', door: { id: 'door_2_3', type: 'door', op: 'sub', amount: 25, req: 'auto', label: '减法门' } },
+      { a: 'r3', b: 'r4', door: { id: 'door_3_4', type: 'door', op: 'expr', expr: 'x - gcd(x, 36)', req: 'auto' } },
+      { a: 'r4', b: 'r5', door: { id: 'door_4_5', type: 'door', op: 'div', divisor: 2, req: 'auto' } },
+      { a: 'r5', b: 'r6', door: { id: 'door_5_6', type: 'door', op: 'expr', expr: 'x - digitSum(x) - 20', req: 'auto' } },
+      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'expr', expr: 'x - gcd(x, 24)', req: 'auto' } },
+      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'sub', amount: 20, req: 'auto' } },
+      { a: 'r8', b: 'r9', door: { id: 'door_8_9', type: 'door', op: 'expr', expr: 'x - digitSum(x) * 4', req: 'auto' } },
+      { a: 'r9', b: 'r10', door: { id: 'door_9_10', type: 'door', op: 'expr', expr: 'x - gcd(x, 45)', req: 'auto' } },
+      { a: 'r10', b: 'r11', door: { id: 'door_10_11', type: 'door', op: 'div', divisor: 3, req: 'auto' } },
+      { a: 'r11', b: 'r12', door: { id: 'door_11_12', type: 'door', op: 'expr', expr: 'x - digitSum(x) * 2', req: 'auto' } },
+      { a: 'r12', b: 'r13', door: { id: 'door_12_13', type: 'door', op: 'sub', amount: 20, req: 'auto' } },
+      { a: 'r13', b: 'r14', door: { id: 'door_13_14', type: 'door', op: 'expr', expr: 'x - gcd(x, 48)', req: 'auto' } },
+      { a: 'r14', b: 'r15', door: { id: 'door_14_15', type: 'door', op: 'expr', expr: 'x - digitSum(x) * 5', req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a', room: 'r0', at: [3, 2], type: 'rice', value: 7 },
@@ -556,11 +555,12 @@
     ],
     start: { room: 'r0', at: [1, 1] },
     solution: [
-      'rice_a', 'rice_b', 'claude_a', 'door_0_1', 'token_a', 'door_1_2', 'claude_b',
-      'door_2_3', 'rice_c', 'door_3_4', 'token_b', 'door_4_5', 'claude_c', 'door_5_6',
-      'user_a', 'door_6_7', 'token_c', 'door_7_8', 'claude_d', 'door_8_9', 'user_b',
-      'door_9_10', 'rice_d', 'door_10_11', 'token_d', 'door_11_12', 'claude_e',
-      'door_12_13', 'token_e', 'door_13_14', 'rice_e', 'door_14_15', 'goal'
+      'r0_rice2', 'door_r0_r4', 'door_r4_r8', 'door_r8_r12', 'door_r12_r13', 'r13_token1', 'door_r9_r13',
+      'door_r9_r10', 'door_r10_r11', 'r11_token1', 'r4_rice1', 'door_r6_r10', 'r6_claude1', 'r6_rice1',
+      'door_r10_r14', 'r9_rice1', 'r11_rice1', 'r14_rice1', 'r10_rice1', 'r13_rice1', 'r0_rice1', 'r8_rice1',
+      'r14_token1', 'door_r2_r6', 'r2_rice1', 'r4_bowl1', 'r2_bowl1', 'door_r5_r9', 'door_r1_r5', 'r1_rice1',
+      'r1_token1', 'door_r6_r7', 'r8_token1', 'r7_user1', 'r12_user1', 'door_r1_r2', 'door_r2_r3',
+      'r5_user1', 'door_r11_r15', 'r15_goal1'
     ]
   });
 
@@ -677,23 +677,23 @@
       { id: 'r15', name: '隐藏核心', shape: 'rect', c: 0, r: 3, wh: [24, 24] }
     ]),
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 12, req: 36, label: '减法门' } },
+      { a: 'r0', b: 'r1', door: { id: 'door_0_1', type: 'door', op: 'sub', amount: 12, req: 'auto', label: '减法门' } },
       /* 注意：gcd 门在 x 恰好是 divisor 的整倍数时会把 x 减到 0（x=36 → 36-gcd(36,36)=0 → 过门即死）。
          写死门槛的门要兜一个下限，保证任何"刚好达标"的玩家不会白白送命。 */
-      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'expr', expr: 'max(x - gcd(x, 36), 8)', req: 36, label: '公约门' } },
-      { a: 'r2', b: 'r3', door: { id: 'door_2_3', type: 'door', op: 'expr', expr: 'x - digitSum(x) * 2', req: 60, label: '数位门' } },
-      { a: 'r3', b: 'r4', door: { id: 'door_3_4', type: 'door', op: 'expr', expr: 'x - gcd(x, 144)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r4', b: 'r5', door: { id: 'door_4_5', type: 'door', op: 'div', divisor: 2, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r5', b: 'r6', door: { id: 'door_5_6', type: 'door', op: 'expr', expr: 'x - 25 - mod(reverseNum(x), 9)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'expr', expr: 'x - gcd(x, 96)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'expr', expr: 'x - 100 - digitSum(x)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r8', b: 'r9', door: { id: 'door_8_9', type: 'door', op: 'expr', expr: 'x - 260 - mod(x, 40)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r9', b: 'r10', door: { id: 'door_9_10', type: 'door', op: 'expr', expr: 'clamp(x, 0, 220)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r10', b: 'r11', door: { id: 'door_10_11', type: 'door', op: 'expr', expr: 'x - gcd(x, 168)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r11', b: 'r12', door: { id: 'door_11_12', type: 'door', op: 'expr', expr: 'x - 125 - mod(x, 25)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r12', b: 'r13', door: { id: 'door_12_13', type: 'door', op: 'sub', amount: 150, req: 'auto', reqFrac: 0.8 } },
-      { a: 'r13', b: 'r14', door: { id: 'door_13_14', type: 'door', op: 'expr', expr: 'x - 136 - digitSum(x)', req: 'auto', reqFrac: 0.8 } },
-      { a: 'r14', b: 'r15', door: { id: 'door_14_15', type: 'door', op: 'expr', expr: 'x - 100 - mod(reverseNum(x), 100)', req: 'auto', reqFrac: 0.8 } }
+      { a: 'r1', b: 'r2', door: { id: 'door_1_2', type: 'door', op: 'expr', expr: 'max(x - gcd(x, 36), 8)', req: 'auto', label: '公约门' } },
+      { a: 'r2', b: 'r3', door: { id: 'door_2_3', type: 'door', op: 'expr', expr: 'x - digitSum(x) * 2', req: 'auto', label: '数位门' } },
+      { a: 'r3', b: 'r4', door: { id: 'door_3_4', type: 'door', op: 'expr', expr: 'x - gcd(x, 144)', req: 'auto' } },
+      { a: 'r4', b: 'r5', door: { id: 'door_4_5', type: 'door', op: 'div', divisor: 2, req: 'auto' } },
+      { a: 'r5', b: 'r6', door: { id: 'door_5_6', type: 'door', op: 'expr', expr: 'x - 25 - mod(reverseNum(x), 9)', req: 'auto' } },
+      { a: 'r6', b: 'r7', door: { id: 'door_6_7', type: 'door', op: 'expr', expr: 'x - gcd(x, 96)', req: 'auto' } },
+      { a: 'r7', b: 'r8', door: { id: 'door_7_8', type: 'door', op: 'expr', expr: 'x - 100 - digitSum(x)', req: 'auto' } },
+      { a: 'r8', b: 'r9', door: { id: 'door_8_9', type: 'door', op: 'expr', expr: 'x - 260 - mod(x, 40)', req: 'auto' } },
+      { a: 'r9', b: 'r10', door: { id: 'door_9_10', type: 'door', op: 'expr', expr: 'min(x - 60, 220)', req: 'auto' } },
+      { a: 'r10', b: 'r11', door: { id: 'door_10_11', type: 'door', op: 'expr', expr: 'x - gcd(x, 168)', req: 'auto' } },
+      { a: 'r11', b: 'r12', door: { id: 'door_11_12', type: 'door', op: 'expr', expr: 'x - 125 - mod(x, 25)', req: 'auto' } },
+      { a: 'r12', b: 'r13', door: { id: 'door_12_13', type: 'door', op: 'sub', amount: 150, req: 'auto' } },
+      { a: 'r13', b: 'r14', door: { id: 'door_13_14', type: 'door', op: 'expr', expr: 'x - 136 - digitSum(x)', req: 'auto' } },
+      { a: 'r14', b: 'r15', door: { id: 'door_14_15', type: 'door', op: 'expr', expr: 'x - 100 - mod(reverseNum(x), 100)', req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a', room: 'r0', at: [5, 3], type: 'rice', value: 9 },
@@ -726,12 +726,11 @@
     ],
     start: { room: 'r0', at: [2, 2] },
     solution: [
-      'rice_a', 'rice_b', 'claude_a', 'door_0_1', 'token_a', 'door_1_2', 'user_a',
-      'rice_c', 'door_2_3', 'claude_b', 'door_3_4', 'token_b', 'door_4_5', 'user_b',
-      'door_5_6', 'claude_c', 'door_6_7', 'token_c', 'door_7_8', 'rice_d', 'door_8_9',
-      'claude_d', 'rice_e', 'door_9_10', 'user_d', 'token_d', 'door_10_11', 'user_c', 'door_11_12',
-      'claude_e', 'door_12_13', 'token_e', 'door_13_14', 'bowl_a', 'claude_f',
-      'door_14_15', 'hidden_core'
+      'rice_b', 'rice_a', 'door_0_1', 'door_1_2', 'rice_c', 'door_2_3', 'door_3_4', 'door_4_5', 'token_b',
+      'token_a', 'user_a', 'door_5_6', 'door_6_7', 'token_c', 'claude_a', 'claude_c', 'door_7_8', 'door_8_9',
+      'rice_e', 'door_9_10', 'user_b', 'token_d', 'door_10_11', 'user_c', 'claude_d', 'rice_d', 'claude_b',
+      'door_11_12', 'claude_e', 'door_12_13', 'door_13_14', 'token_e', 'bowl_a', 'claude_f', 'door_14_15',
+      'hidden_core'
     ]
   });
 

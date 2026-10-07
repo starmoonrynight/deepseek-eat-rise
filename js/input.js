@@ -1,7 +1,7 @@
 /* ─────────────────────────────────────────────────────────────
    input.js —— 键盘(Windows) / 触屏(安卓) / 鼠标 三合一输入
    ------------------------------------------------------------------
-   · 键盘：WASD、方向键、R 重开、U 撤销、C 图鉴、Z 视图、M 静音、L 关卡
+   · 键盘：WASD、方向键、R 重开、I 换形象、C 图鉴、Z 视图、M 静音、L 关卡
    · 触屏：画布滑动（滑一下走一格，按住连续走）+ 右下角虚拟方向键
    · 鼠标：点击相邻格子走一步
    ───────────────────────────────────────────────────────────── */
@@ -36,6 +36,8 @@
       if (k === 'r') handlers.onAction && handlers.onAction('restart');
       else if (k === 'c') handlers.onAction && handlers.onAction('codex');
       else if (k === 'z') handlers.onAction && handlers.onAction('zoom');
+      else if (k === '+' || k === '=') handlers.onAction && handlers.onAction('zoom-in');
+      else if (k === '-' || k === '_') handlers.onAction && handlers.onAction('zoom-out');
       else if (k === 'm') handlers.onAction && handlers.onAction('mute');
       else if (k === 'l') handlers.onAction && handlers.onAction('levels');
       else if (k === 'i') handlers.onAction && handlers.onAction('art');
@@ -73,16 +75,29 @@
 
     /* 画布：触屏滑动 + 鼠标点击 */
     if (canvasEl) {
+      /* 长按查看元素：按住 450ms 不移动 → 弹出这个格子上元素的公式
+         （只给规则、不给算好的结果；长按不会触发元素） */
+      var holdTimer = null;
+      function cancelHold() { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } }
       canvasEl.addEventListener('pointerdown', function (e) {
         G.audio.unlock();
         lastTouch = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false, id: e.pointerId };
         swipeLock = false;
+        cancelHold();
+        var r0 = canvasEl.getBoundingClientRect();
+        var px = e.clientX - r0.left, py = e.clientY - r0.top;
+        holdTimer = setTimeout(function () {
+          holdTimer = null;
+          if (!lastTouch || lastTouch.moved) return;
+          if (handlers.onHold) handlers.onHold(px, py);
+        }, 450);
       });
       canvasEl.addEventListener('pointermove', function (e) {
         if (!lastTouch || lastTouch.id !== e.pointerId) return;
         var dx = e.clientX - lastTouch.x, dy = e.clientY - lastTouch.y;
         var TH = 26;
         if (Math.abs(dx) < TH && Math.abs(dy) < TH) return;
+        cancelHold();
         if (swipeLock) return;
         var dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
         swipeQueue.push(dir);
@@ -93,14 +108,18 @@
       var endTouch = function (e) {
         if (!lastTouch) return;
         var quick = Date.now() - lastTouch.t < 260;
+        var wasHold = !holdTimer && !lastTouch.moved && !quick;   /* 长按已经弹过面板 → 不要再走一格 */
+        cancelHold();
         if (!lastTouch.moved && quick && handlers.onTap) {
           var r = canvasEl.getBoundingClientRect();
           handlers.onTap(e.clientX - r.left, e.clientY - r.top);
+        } else if (wasHold) {
+          /* 长按结束：什么都不做 */
         }
         lastTouch = null;
       };
       canvasEl.addEventListener('pointerup', endTouch);
-      canvasEl.addEventListener('pointercancel', function () { lastTouch = null; });
+      canvasEl.addEventListener('pointercancel', function () { cancelHold(); lastTouch = null; });
       canvasEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     }
 

@@ -12,13 +12,15 @@
 
   var M = G.map, S = G.sprites, FX = G.fx, R = G.rules;
 
-  /* 跟随模式一屏显示多少格（越小放得越大） */
-  var TILES_X = 20, TILES_Y = 13;
-  var TILE_MIN = 24, TILE_MAX = 56;
+  /* 跟随模式一屏显示多少格（越小放得越大；默认一屏约 16×9.5 格） */
+  var TILES_X = 16, TILES_Y = 9.5;
+  var TILE_MIN = 30, TILE_MAX = 76;
   /* 全图模式下限：整张图能塞进窗口且每格不小于这个像素才用全图 */
   var FIT_MIN_TILE = 30;
   /* 视口烘焙时向外多烘焙几格，避免镜头一动就重烘 */
   var BAKE_MARGIN = 6, BAKE_TRIGGER = 4;
+  /* 烘焙瓦片尺寸上限（放大到 76px/格时也要 1:1 清晰） */
+  var BAKE_MAX_TILE = 64;
 
   function Renderer(canvas) {
     this.canvas = canvas;
@@ -29,6 +31,7 @@
     this.tile = 24;
     this.camX = 0; this.camY = 0;
     this.fitUser = null;            /* null=自动, true=强制全图, false=强制跟随 */
+    this.zoom = 1;                  /* 缩放偏好（+/- 可调，存 localStorage） */
     this.following = true;
     this.t = 0;
     this.level = null;
@@ -138,7 +141,7 @@
       this.camX = lv.w / 2;
       this.camY = lv.h / 2;
     } else {
-      this.tile = clamp(Math.min(v.w / TILES_X, v.h / TILES_Y), TILE_MIN, TILE_MAX);
+      this.tile = clamp(Math.min(v.w / TILES_X, v.h / TILES_Y) * this.zoom, TILE_MIN, TILE_MAX);
       this.following = true;
       var p = this.playerPos || { x: lv.start.x, y: lv.start.y };
       this.camX = p.x + 0.5; this.camY = p.y + 0.5;
@@ -190,7 +193,7 @@
   Renderer.prototype.bakeViewport = function () {
     var lv = this.level, v = this.view;
     if (!v) return;
-    var bt = Math.min(this.tile, 48);
+    var bt = Math.min(this.tile, BAKE_MAX_TILE);
     var visW = v.w / this.tile, visH = v.h / this.tile;
     var x0 = Math.max(0, Math.floor(this.camX - visW / 2) - BAKE_MARGIN);
     var y0 = Math.max(0, Math.floor(this.camY - visH / 2) - BAKE_MARGIN);
@@ -230,7 +233,7 @@
             c.fillRect(px, py, bt, bt);
             if (((x + y) & 1) === 0) { c.fillStyle = 'rgba(255,255,255,.03)'; c.fillRect(px, py, bt, bt); }
           } else {
-            c.fillStyle = '#0a1120'; c.fillRect(px, py, bt, bt);
+            c.fillStyle = (this.level && this.level.theme) ? this.level.theme.void : '#0a1120'; c.fillRect(px, py, bt, bt);
             c.fillStyle = 'rgba(122,170,255,.10)'; c.fillRect(px, py, bt, Math.max(1, bt * 0.16));
           }
           continue;

@@ -20,11 +20,14 @@ const LOAD = [
   'js/rules.js',
   'js/map.js',
   'js/engine.js',
+  'js/levelkit.js',
   'js/levels/act1.js',
   'js/levels/act2.js',
+  'js/levels/act3.js',
+  'js/levels/act4.js',
   'js/verify.js',
   'js/levels.js'
-];
+].filter((f) => fs.existsSync(path.join(root, f)));
 
 function loadDSF() {
   const sandbox = { console, window: {}, setTimeout, clearTimeout, performance: { now: () => Date.now() } };

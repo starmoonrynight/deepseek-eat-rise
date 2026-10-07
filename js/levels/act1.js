@@ -61,8 +61,8 @@
       }
     ],
     tips: [
-      '先把前厅的白饭吃掉，再去撞门',
-      '门有数值门槛：数值不够撞上去就失败',
+      '门只要凑够门槛就能过 —— 不必把一个房间吃空再去撞',
+      '撞不动就换个房间吃，回头再来（门开着，路是通的）',
       '终点门也是门，数值达标走进去才算通关'
     ],
     hint: '吃白饭涨数值 → 过门会掉数值 → 攒够了再闯终点门',
@@ -73,9 +73,9 @@
       { id: 'r2', name: '终点厅', at: [2, 17], wh: [16, 13], shape: 'rect', color: '#4a3a2f' }
     ],
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 4, req: 12 } },
-      { a: 'r1', b: 'r2', door: { id: 'door_r1_r2', type: 'door', op: 'sub', amount: 7, req: 34 } },
-      { a: 'r0', b: 'r2', door: { id: 'door_r0_r2', type: 'door', op: 'sub', amount: 12, req: 40 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 4, req: 'auto' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_r1_r2', type: 'door', op: 'sub', amount: 7, req: 'auto' } },
+      { a: 'r0', b: 'r2', door: { id: 'door_r0_r2', type: 'door', op: 'sub', amount: 12, req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a1', room: 'r0', at: [3, 3], type: 'rice', value: 5 },
@@ -87,7 +87,9 @@
       { id: 'goal', room: 'r2', at: [13, 10], type: 'goal', req: 'auto' }
     ],
     start: { room: 'r0', at: [2, 2] },
-    solution: ['rice_a1', 'rice_a2', 'door_r0_r1', 'rice_b1', 'rice_b2', 'door_r1_r2', 'rice_c1', 'rice_c2', 'goal']
+    solution: [
+      'rice_a2', 'door_r0_r1', 'rice_b2', 'door_r1_r2', 'rice_c2', 'rice_c1', 'rice_b1', 'rice_a1', 'goal'
+    ]
   });
 
   /* ── 第 2 关 铁盆护体 ─────────────────────────────────────────
@@ -136,9 +138,9 @@
       { id: 'r2', name: '后厨', at: [2, 17], wh: [16, 13], shape: 'round', k: 4, color: '#3a4a2f' }
     ],
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 10, req: 38 } },
-      { a: 'r0', b: 'r2', door: { id: 'door_r0_r2', type: 'door', op: 'sub', amount: 6, req: 15 } },
-      { a: 'r2', b: 'r1', door: { id: 'door_r2_r1', type: 'door', op: 'sub', amount: 12, req: 48 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 10, req: 'auto' } },
+      { a: 'r0', b: 'r2', door: { id: 'door_r0_r2', type: 'door', op: 'sub', amount: 6, req: 'auto' } },
+      { a: 'r2', b: 'r1', door: { id: 'door_r2_r1', type: 'door', op: 'sub', amount: 12, req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a1', room: 'r0', at: [9, 3], type: 'rice', value: 6 },
@@ -150,7 +152,9 @@
       { id: 'goal', room: 'r1', at: [7, 7], type: 'goal', req: 'auto' }
     ],
     start: { room: 'r0', at: [2, 2] },
-    solution: ['rice_a1', 'bowl1', 'door_r0_r2', 'rice_b1', 'rice_b2', 'rice_b3', 'door_r0_r1', 'rice_c1', 'goal']
+    solution: [
+      'bowl1', 'door_r0_r1', 'rice_c1', 'door_r0_r2', 'rice_b3', 'rice_b1', 'rice_b2', 'rice_a1', 'goal'
+    ]
   });
 
   /* ── 第 3 关 倍率之宴 ─────────────────────────────────────────
@@ -203,9 +207,9 @@
       { id: 'r3', name: '终点厅', at: [2, 18], wh: [14, 12], shape: 'round', k: 3, color: '#4a3a2f' }
     ],
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'div', divisor: 3, req: 18 } },
-      { a: 'r1', b: 'r2', door: { id: 'door_r1_r2', type: 'door', op: 'sub', amount: 20, req: 80 } },
-      { a: 'r2', b: 'r3', door: { id: 'door_r2_r3', type: 'door', op: 'sub', amount: 25, req: 150 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'div', divisor: 3, req: 'auto' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_r1_r2', type: 'door', op: 'sub', amount: 20, req: 'auto' } },
+      { a: 'r2', b: 'r3', door: { id: 'door_r2_r3', type: 'door', op: 'sub', amount: 25, req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a1', room: 'r0', at: [9, 3], type: 'rice', value: 9 },
@@ -219,8 +223,10 @@
       { id: 'goal', room: 'r3', at: [9, 8], type: 'goal', req: 'auto' }
     ],
     start: { room: 'r0', at: [2, 2] },
-    solution: ['rice_a1', 'rice_a2', 'door_r0_r1', 'rice_b1', 'rice_b2', 'claude1',
-               'door_r1_r2', 'rice_c1', 'claude2', 'door_r2_r3', 'rice_d1', 'goal']
+    solution: [
+      'rice_a1', 'door_r0_r1', 'rice_b2', 'rice_b1', 'rice_a2', 'claude1', 'door_r1_r2', 'rice_c1',
+      'claude2', 'door_r2_r3', 'rice_d1', 'goal'
+    ]
   });
 
   /* ── 第 4 关 变量重写 ─────────────────────────────────────────
@@ -275,9 +281,9 @@
       { id: 'r3', name: '终点厅', at: [2, 18], wh: [14, 12], shape: 'round', k: 3, color: '#4a3a2f' }
     ],
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 8, req: 18 } },
-      { a: 'r1', b: 'r2', door: { id: 'door_r1_r2', type: 'door', op: 'div', divisor: 2, req: 110 } },
-      { a: 'r2', b: 'r3', door: { id: 'door_r2_r3', type: 'door', op: 'sub', amount: 40, req: 200 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 8, req: 'auto' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_r1_r2', type: 'door', op: 'div', divisor: 2, req: 'auto' } },
+      { a: 'r2', b: 'r3', door: { id: 'door_r2_r3', type: 'door', op: 'sub', amount: 40, req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a1', room: 'r0', at: [9, 3], type: 'rice', value: 9 },
@@ -292,8 +298,10 @@
       { id: 'goal', room: 'r3', at: [9, 8], type: 'goal', req: 'auto' }
     ],
     start: { room: 'r0', at: [2, 2] },
-    solution: ['rice_a1', 'rice_a2', 'door_r0_r1', 'token1', 'rice_b1', 'claude1',
-               'door_r1_r2', 'token2', 'rice_c1', 'claude2', 'door_r2_r3', 'rice_d1', 'goal']
+    solution: [
+      'rice_a1', 'door_r0_r1', 'door_r1_r2', 'token1', 'door_r2_r3', 'token2', 'rice_d1', 'rice_c1',
+      'rice_b1', 'rice_a2', 'claude2', 'claude1', 'goal'
+    ]
   });
 
   /* ── 第 5 关 用户的审视 ───────────────────────────────────────
@@ -348,9 +356,9 @@
       { id: 'r3', name: '终点厅', at: [2, 18], wh: [14, 12], shape: 'round', k: 3, color: '#4a3a2f' }
     ],
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 12, req: 38 } },
-      { a: 'r1', b: 'r2', door: { id: 'door_r1_r2', type: 'door', op: 'div', divisor: 3, req: 80 } },
-      { a: 'r2', b: 'r3', door: { id: 'door_r2_r3', type: 'door', op: 'expr', expr: 'max(15, x - 60)', req: 110 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 12, req: 'auto' } },
+      { a: 'r1', b: 'r2', door: { id: 'door_r1_r2', type: 'door', op: 'div', divisor: 3, req: 'auto' } },
+      { a: 'r2', b: 'r3', door: { id: 'door_r2_r3', type: 'door', op: 'expr', expr: 'max(15, x - 60)', req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a1', room: 'r0', at: [9, 3], type: 'rice', value: 10 },
@@ -365,8 +373,10 @@
       { id: 'goal', room: 'r3', at: [9, 8], type: 'goal', req: 'auto' }
     ],
     start: { room: 'r0', at: [2, 2] },
-    solution: ['rice_a1', 'rice_a2', 'user1', 'door_r0_r1', 'rice_b1', 'claude1',
-               'door_r1_r2', 'rice_c1', 'user2', 'claude2', 'door_r2_r3', 'rice_d1', 'goal']
+    solution: [
+      'rice_a2', 'rice_a1', 'door_r0_r1', 'door_r1_r2', 'rice_b1', 'door_r2_r3', 'rice_d1', 'user1', 'user2',
+      'rice_c1', 'claude1', 'claude2', 'goal'
+    ]
   });
 
   /* ── 第 6 关 铁盆与隐藏格 ─────────────────────────────────────
@@ -409,7 +419,7 @@
       }
     ],
     tips: [
-      '先把铁盆大白饭吃掉，再去撞右边那扇高门槛的门（需 40）',
+      '先去撞那扇高门槛的门 —— 撞不过正好看看铁盆怎么用',
       '碎盆不亏：数值不变、门也不会消失，回头吃够再来',
       '最后别只盯着门看 —— 出口可能藏在地板里，数值够了才显形'
     ],
@@ -422,10 +432,10 @@
       { id: 'r3', name: '回廊', at: [2, 21], wh: [15, 14], shape: 'round', k: 3, color: '#2f4a3a' }
     ],
     links: [
-      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 12, req: 40 } },
-      { a: 'r0', b: 'r3', door: { id: 'door_r0_r3', type: 'door', op: 'sub', amount: 6, req: 16 } },
-      { a: 'r3', b: 'r2', door: { id: 'door_r3_r2', type: 'door', op: 'div', divisor: 2, req: 70 } },
-      { a: 'r2', b: 'r1', door: { id: 'door_r2_r1', type: 'door', op: 'expr', expr: 'max(20, x - 110)', req: 140 } }
+      { a: 'r0', b: 'r1', door: { id: 'door_r0_r1', type: 'door', op: 'sub', amount: 12, req: 'auto' } },
+      { a: 'r0', b: 'r3', door: { id: 'door_r0_r3', type: 'door', op: 'sub', amount: 6, req: 'auto' } },
+      { a: 'r3', b: 'r2', door: { id: 'door_r3_r2', type: 'door', op: 'div', divisor: 2, req: 'auto' } },
+      { a: 'r2', b: 'r1', door: { id: 'door_r2_r1', type: 'door', op: 'expr', expr: 'max(20, x - 110)', req: 'auto' } }
     ],
     elements: [
       { id: 'rice_a1', room: 'r0', at: [10, 3], type: 'rice', value: 7 },
@@ -437,11 +447,13 @@
       { id: 'user1', room: 'r2', at: [9, 7], type: 'user', cond: 'x >= 54', bonus: 22, penalty: 14 },
       { id: 'claude2', room: 'r2', at: [10, 9], type: 'claude', factor: 2 },
       { id: 'rice_d1', room: 'r1', at: [4, 4], type: 'rice', value: 18 },
-      { id: 'hidden1', room: 'r1', at: [7, 8], type: 'hidden', req: 60, reveal: 60 }
+      { id: 'hidden1', room: 'r1', at: [7, 8], type: 'hidden', req: 'auto', reveal: 'auto', reqFrac: 1, revealFrac: 1 }
     ],
     start: { room: 'r0', at: [2, 2] },
-    solution: ['rice_a1', 'bowl1', 'door_r0_r3', 'rice_b1', 'rice_b2', 'claude1',
-               'door_r3_r2', 'rice_c1', 'user1', 'claude2', 'door_r2_r1', 'rice_d1', 'hidden1']
+    solution: [
+      'rice_a1', 'door_r0_r3', 'door_r3_r2', 'rice_b1', 'bowl1', 'door_r2_r1', 'rice_d1', 'rice_c1', 'user1',
+      'rice_b2', 'claude1', 'claude2', 'hidden1'
+    ]
   });
 
 })(typeof window !== 'undefined' ? (window.DSF = window.DSF || {}) : (globalThis.DSF = globalThis.DSF || {}));

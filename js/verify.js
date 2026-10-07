@@ -6,7 +6,9 @@
       再把整条路径交给真实规则引擎逐步模拟，得到每一步的真实数值。
    2) resolveAutoReqs(level)：把 req:'auto' 的门槛，
       按最优解到达该元素时的真实数值反推出来
-         · 中转站门：floor(到达值 × reqFrac)，默认 0.8
+         · 中转站门：默认 floor(到达值 × reqFrac)，reqFrac 默认 1.0
+           —— 也就是「最优解走到这扇门时的真实数值」，即这扇门的极限数值。
+           想让门宽松一点，在门的数据里写 reqFrac: 0.8 即可。
          · 终点门 / 隐藏通关格：到达值本身（策划案要求：最优值即标准值）
       然后带着真实门槛再跑一次 trace 复核，确保一定可通关。
    3) checkAll(specs)：把全部关卡建出来跑一遍，输出可读报告。
@@ -157,9 +159,10 @@
     var report = { tuned: 0, pass1: pass1, pass2: null, failed: false };
 
     if (!pass1.ok) {
-      /* 反推失败：给一个保守门槛，保证还能玩，并让校验器大声报错 */
+      /* 反推失败（例如这一关还没写 solution）：给一个保守门槛，保证还能玩，并让校验器大声报错。
+         门用"物理下限"兜底，这样至少不会退化成 1 而连带报出一堆"门没有隔开/没有减少"的假错误。 */
       autos.forEach(function (el) {
-        if (el.reqAuto) el.req = (el.type === 'door') ? 1 : 1;
+        if (el.reqAuto) el.req = (el.type === 'door') ? R.doorFloor(el) : 1;
         if (el.revealAuto) el.reveal = 1;
       });
       report.failed = true;
@@ -172,10 +175,15 @@
 
     autos.forEach(function (el) {
       var r = byRecord[el.id];
-      if (!r) return;
+      if (!r) {
+        /* 不在最优解路线上的门：没有"到达值"可反推，用它的物理下限兜底。
+           不能留 0 —— 那会变成"随便什么数值都能过、过完把自己算死"的陷阱门。 */
+        if (el.type === 'door' && el.reqAuto) { el.req = R.doorFloor(el); el.reqFloor = true; }
+        return;
+      }
       if (el.reqAuto) {
         var frac = typeof el.reqFrac === 'number' ? el.reqFrac
-                 : (el.type === 'door' ? 0.8 : 1.0);
+                 : (el.type === 'door' ? 1.0 : 1.0);
         var req = Math.floor(r.before * frac);
         /* 门的门槛至少 1，避免出现"0 也能过"的退化门 */
         if (el.type === 'door' && req < 1) req = 1;
@@ -200,6 +208,30 @@
   function checkLevel(level) {
     var base = M.validate(level);
     var errors = base.errors.slice(), warns = base.warns.slice();
+
+    /* 新算法必须先介绍：式子用到的函数，必须在这一关或更早的关卡解锁。
+       策划要求"前面没出现过的算法不能没有介绍就出现在新关卡"。 */
+    var sched = (G.levels && G.levels.funcSchedule) ? G.levels.funcSchedule : null;
+    if (sched && G.expr.funcsUsed) {
+      level.elements.forEach(function (el) {
+        var srcs = [];
+        if (el.expr) srcs.push([el.type === 'door' ? '门' : 'token', el.expr]);
+        if (el.cond) srcs.push(['用户条件', el.cond]);
+        srcs.forEach(function (pair) {
+          var used = G.expr.funcsUsed(pair[1]);
+          if (!used) return;
+          Object.keys(used).forEach(function (f) {
+            var at = sched[f];
+            if (at === undefined) {
+              errors.push('[' + level.id + '] ' + el.id + ' 用了未登记的算法 ' + f + '()');
+            } else if (at > level.id) {
+              errors.push('[' + level.id + '] ' + el.id + '（' + pair[0] + '）用了还没介绍的算法 ' +
+                f + '()：它要到第 ' + at + ' 关才解锁');
+            }
+          });
+        });
+      });
+    }
 
     /* 规模 */
     var mn = sizeMinFor(level.id);

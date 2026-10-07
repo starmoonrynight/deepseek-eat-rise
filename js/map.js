@@ -157,6 +157,31 @@
       return pts;
     }
 
+    /* Z 形（多段拐弯）走廊：先到中点拐一下，再拐回来接上目标。
+       —— 策划要求"连接道路不一定是直线"，而且走廊之间允许交叠，
+          这样才能把远处的房间接进中心枢纽。 */
+    function pathBetweenZ(a, b, bend, jog) {
+      var mx = Math.round((a[0] + b[0]) / 2);
+      var my = Math.round((a[1] + b[1]) / 2);
+      var m = bend === 'vh' ? [mx + jog, my] : [mx, my + jog];
+      var seg1 = pathBetween(a, m, bend);
+      var seg2 = pathBetween(m, b, bend === 'vh' ? 'hv' : 'vh');
+      return seg1.concat(seg2.slice(1));
+    }
+
+    /* 走廊交叉口四面都通，门放在那儿等于没门 ——
+       只认"前后各一格是本走廊、左右都是墙"的窄口格。 */
+    var DIR4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    function narrowAt(p) {
+      var n = 0;
+      for (var i = 0; i < 4; i++) {
+        var x = p[0] + DIR4[i][0], y = p[1] + DIR4[i][1];
+        if (!inb(x, y)) continue;
+        if (grid[idx(x, y)] === FLOOR) n++;
+      }
+      return n <= 2;
+    }
+
     /* 检查走廊是否穿过了"其它房间"的内部（会破坏门的分隔性） */
     function pathHitsOtherRoom(pts, ra, rb) {
       for (var i = 1; i < pts.length - 1; i++) {
@@ -164,6 +189,25 @@
           var rm = rooms[r];
           if (rm === ra || rm === rb) continue;
           if (containsCell(rm, pts[i][0], pts[i][1])) return true;
+        }
+      }
+      return false;
+    }
+
+    /* 交汇处必须"预留宽度"：一条走廊的中间格旁边如果已经有别的走廊地板，
+       两条路就会并成一片大厅 —— 门旁边凭空多出通路，等于没门。
+       所以新走廊的每一格，除了它自己前后两格以外，四邻必须还是墙。 */
+    function pathMergesOther(pts) {
+      for (var i = 1; i < pts.length - 1; i++) {
+        var p = pts[i];
+        for (var q = 0; q < 4; q++) {
+          var x = p[0] + DIR4[q][0], y = p[1] + DIR4[q][1];
+          if (!inb(x, y)) continue;
+          if (grid[idx(x, y)] !== FLOOR) continue;
+          var onPath = false;
+          if (i > 0 && pts[i - 1][0] === x && pts[i - 1][1] === y) onPath = true;
+          if (i + 1 < pts.length && pts[i + 1][0] === x && pts[i + 1][1] === y) onPath = true;
+          if (!onPath) return true;          /* 旁边已经是地板 → 会并成大厅 */
         }
       }
       return false;
@@ -188,18 +232,34 @@
       }
       cands.sort(function (p, q) { return p.d - q.d; });
       var best = null, fallback = null;
+      var freeform = !!spec.freeform;
+      /* 注意：这里没有启用 'zh'/'zv' 多段拐弯。多段走廊很容易和别的走廊贴边，
+         两条路一并就成了大厅 —— 门旁边凭空多出通路，等于没门（策划指出过这个问题）。
+         要重新启用，必须先保证交汇处"预留宽度"：给走廊之间留 1 格墙，
+         并且让枢纽房间的每条走廊从不同方向的边缘接入。 */
+      var bends = ['hv', 'vh'];
       var limit = Math.min(cands.length, 260);
       for (var c = 0; c < limit; c++) {
         var cand = cands[c];
         if (cand.a[0] === cand.b[0] && cand.a[1] === cand.b[1]) continue;
-        ['hv', 'vh'].forEach(function (bend) {
+        bends.forEach(function (bend) {
           if (best) return;
-          var pts = pathBetween(cand.a, cand.b, bend);
+          var pts;
+          if (bend === 'zh' || bend === 'zv') {
+            var jog = ((li * 7 + c) % 5 - 2) * 3;        /* 确定性抖动，同一种子出同一张图 */
+            pts = pathBetweenZ(cand.a, cand.b, bend === 'zh' ? 'hv' : 'vh', jog);
+          } else {
+            pts = pathBetween(cand.a, cand.b, bend);
+          }
           if (!fallback) fallback = pts;
-          if (!pathHitsOtherRoom(pts, ra, rb)) best = pts;
+          if (!pathHitsOtherRoom(pts, ra, rb) && !pathMergesOther(pts)) best = pts;
         });
         if (best) break;
       }
+      /* 实在找不到"既绕开房间又不合并"的走法时，允许合并，但记一笔 ——
+         校验器会因此报出门失去隔断作用的错误，让我们知道这条路没走通 */
+      var merged = false;
+      if (!best) { best = fallback; merged = !!best; }
       var pts = best || fallback;
       if (!pts) throw new Error('link ' + lk.a + '→' + lk.b + ' 无法生成走廊');
       carvePath(pts);
@@ -215,6 +275,7 @@
         if (pi === 0 || pi === pts.length - 1) continue;         /* 端点属于房间内部 */
         var pc = pts[pi];
         if (containsCell(ra, pc[0], pc[1]) || containsCell(rb, pc[0], pc[1])) continue;
+        if (!narrowAt(pc)) continue;                             /* 走廊交叉口不放门 */
         var okDist = true;
         for (var d = 0; d < doors.length; d++) {
           if (Math.max(Math.abs(doors[d].x - pc[0]), Math.abs(doors[d].y - pc[1])) < 3) { okDist = false; break; }
@@ -224,13 +285,23 @@
         break;
       }
       if (!doorCell) {
+        /* 兜底：在整条走廊里挑"最窄"的一格（四邻地板最少），
+           枢纽周围十几条走廊交汇时不可能找到完美窄口，至少要挑最像门的 */
+        var bestN = 9, bestCell = null;
         for (var oi2 = 0; oi2 < order.length; oi2++) {
           var pi2 = order[oi2];
           if (pi2 === 0 || pi2 === pts.length - 1) continue;
           var pc2 = pts[pi2];
           if (containsCell(ra, pc2[0], pc2[1]) || containsCell(rb, pc2[0], pc2[1])) continue;
-          doorCell = pc2; break;
+          var nn = 0;
+          for (var q = 0; q < 4; q++) {
+            var qx = pc2[0] + DIR4[q][0], qy = pc2[1] + DIR4[q][1];
+            if (inb(qx, qy) && grid[idx(qx, qy)] === FLOOR) nn++;
+          }
+          if (nn < bestN) { bestN = nn; bestCell = pc2; }
+          if (nn <= 2) break;
         }
+        doorCell = bestCell;
       }
       if (!doorCell) throw new Error('link ' + lk.a + '→' + lk.b + ' 找不到合适放门的位置');
 
@@ -565,6 +636,20 @@
 
     doors.forEach(function (d) {
       if (!d.anchorA || !d.anchorB) { errors.push('[' + level.id + '] 门 ' + d.id + ' 缺少房间锚点'); return; }
+      if (level.freeform) {
+        /* 自由布局的走廊必须"预留宽度"，正常情况下门一定卡在 1 格宽的窄口上。
+           真出现四面都通的格子，说明两条走廊并成了大厅 —— 这门就形同虚设，
+           所以这里报错（而不是放过），逼着生成器换走法。 */
+        var n = 0;
+        var dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        for (var i = 0; i < 4; i++) {
+          var x = d.x + dirs[i][0], y = d.y + dirs[i][1];
+          if (x < 0 || y < 0 || x >= W || y >= H) continue;
+          if (grid[y * W + x] === FLOOR) n++;
+        }
+        if (n > 2) errors.push('[' + level.id + '] 门 ' + d.id + ' 落在走廊交汇处（四面都通），旁边可以绕过 —— 交汇处没有预留宽度');
+        return;
+      }
       var blocked = flood(true, d.anchorA);
       if (blocked[d.anchorB[1] * W + d.anchorB[0]]) {
         errors.push('[' + level.id + '] 门 ' + d.id + ' 没有把 ' + d.roomA + ' 和 ' + d.roomB + ' 隔开（去掉门仍然连通）');

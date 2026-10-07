@@ -39,9 +39,32 @@
       G.ui.setHint(renderer.following ? '放大跟随：地图随大肥鱼滚动 · Z 看全图' : (level.spec.hint || ''));
     },
     toggleMute: function () { var m = G.audio.toggle(); return m; },
+    zoomIn: function () { applyZoom(1.12); },
+    zoomOut: function () { applyZoom(1 / 1.12); },
     canDismissOverlay: function () { return false; }
   };
   G.game = game;
+
+  /* ── 缩放偏好（+ / - 调，存 localStorage） ─────────────── */
+  var ZOOM_KEY = 'dsf.fish.zoom';
+  function loadZoom() {
+    var z = 1;
+    try {
+      var v = parseFloat(window.localStorage.getItem(ZOOM_KEY));
+      if (isFinite(v) && v > 0) z = v;
+    } catch (e) { }
+    return Math.max(0.6, Math.min(1.8, z));
+  }
+  function applyZoom(f, quiet) {
+    renderer.zoom = Math.max(0.6, Math.min(1.8, renderer.zoom * f));
+    if (renderer.fitUser !== null) renderer.fitUser = null;   /* 从全图切回跟随，缩放才看得见 */
+    renderer.layout();
+    renderer.snapCamera();
+    renderer.bakeStatic();
+    lastBakeTile = renderer.tile;
+    try { window.localStorage.setItem(ZOOM_KEY, String(renderer.zoom)); } catch (e) { }
+    if (!quiet) G.ui.toast('缩放 ' + Math.round(renderer.tile) + ' px/格　（ + / − 可调，Z 看全图）', 'good');
+  }
 
   /* ── 尺寸 / 视野内边距 ────────────────────────────────── */
   function computeInsets() {
@@ -424,6 +447,7 @@
   function boot() {
     canvas = document.getElementById('stage');
     renderer = new G.Renderer(canvas);
+    renderer.zoom = loadZoom();
     G.levels.load();
 
     /* 打开页面就告知玩法 */
@@ -456,11 +480,13 @@
       if (embedded.claude) G.sprites.installArt('claude', embedded.claude, function () { });
       if (embedded.user) G.sprites.installArt('user', embedded.user, function () { });
     } else if (USE_IMAGE_ASSETS && G.sprites && G.sprites.installArt) {
-      G.sprites.installArt('fish', 'assets/fish.png', function (ok) {
+      /* 带 ?v= 版本号：换过立绘之后浏览器不会再拿旧缓存 */
+      var VV = '?v=3';
+      G.sprites.installArt('fish', 'assets/fish.png' + VV, function (ok) {
         if (!ok) { G.ui.loadSavedArt(); return; }   /* 没有 assets 目录就静默走程序化画法 */
-        G.sprites.installArt('claude', 'assets/claude.png', function () { });
-        G.sprites.installArt('user', 'assets/user.png', function () { });
-        G.sprites.installArt('fish_bowl', 'assets/fish_bowl.png', function () {
+        G.sprites.installArt('claude', 'assets/claude.png' + VV, function () { });
+        G.sprites.installArt('user', 'assets/user.png' + VV, function () { });
+        G.sprites.installArt('fish_bowl', 'assets/fish_bowl.png' + VV, function () {
           G.ui.loadSavedArt();                     /* 本地拖拽保存的形象优先级最高 */
         });
       });
@@ -472,13 +498,15 @@
     G.input.setPadVisible(touch);
     G.ui.setHint(touch
       ? '按住方向键连续移动 · 滑动走一格 · 左下角是小地图'
-      : '按住方向键 / WASD 连续移动 · 点相邻格走一格 · Z 切全图 · R 重开 · C 图鉴');
+      : '按住方向键 / WASD 连续移动 · 点相邻格走一格 · +/− 缩放 · Z 全图 · R 重开 · C 图鉴');
 
     G.input.init({
       onAction: function (act) {
         if (act === 'restart') game.restart();
         else if (act === 'codex') G.ui.showCodex();
         else if (act === 'zoom') game.toggleZoom();
+        else if (act === 'zoom-in') game.zoomIn();
+        else if (act === 'zoom-out') game.zoomOut();
         else if (act === 'mute') G.ui.syncMute(game.toggleMute());
         else if (act === 'levels') G.ui.showLevels();
         else if (act === 'verify') G.ui.showVerify();
@@ -493,6 +521,17 @@
         var dx = c.x - engine.px, dy = c.y - engine.py;
         if (Math.abs(dx) + Math.abs(dy) !== 1) return;
         tapDir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+      },
+      /* 长按格子：查看这个位置上元素的公式（只给规则，不给算好的结果） */
+      onHold: function (x, y) {
+        if (!engine || !level) return;
+        var c = renderer.cellAt(x, y);
+        var el = null;
+        for (var i = 0; i < level.elements.length; i++) {
+          if (level.elements[i].x === c.x && level.elements[i].y === c.y) { el = level.elements[i]; break; }
+        }
+        if (!el) { G.ui.toast('这里没有可查看的元素', 'warn'); return; }
+        G.ui.showElement(el, engine);
       }
     });
 

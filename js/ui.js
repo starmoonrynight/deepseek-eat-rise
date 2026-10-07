@@ -414,9 +414,79 @@
     }, true);
   }
 
+  /* ── 长按元素：看它的公式（只给规则，不给算好的结果） ─────── */
+  function showElement(el, engine) {
+    if (!el) return;
+    var E2 = G.expr, R2 = G.rules;
+    var name = (R2.TYPES[el.type] && R2.TYPES[el.type].name) || el.type;
+    var formula = el.type === 'door' ? R2.doorFormula(el)
+                : (el.type === 'user' ? el.cond : (el.expr || R2.formula(el)));
+    var html = '<h1>' + name + '</h1>';
+    html += '<div class="sub" style="margin-top:6px"><code>' + String(formula).replace(/</g, '&lt;') + '</code></div>';
+    if (el.type === 'door') {
+      html += '<div class="sub" style="margin-top:8px">门槛 <b>≥' + el.req + '</b>　（数值够才能过；不够就是失败）</div>';
+    } else if (el.type === 'rice' || el.type === 'bowl_rice') {
+      html += '<div class="sub" style="margin-top:8px">吃下去数值 <b>+' + el.value + '</b></div>';
+    } else if (el.type === 'claude') {
+      html += '<div class="sub" style="margin-top:8px">把当前数值 <b>乘以 ' + el.factor + '</b>，越晚吃越赚</div>';
+    } else if (el.type === 'user') {
+      html += '<div class="sub" style="margin-top:8px">条件成立 <b style="color:#48e5a3">+' + el.bonus +
+        '</b>，不成立 <b style="color:#ff5d6c">−' + (el.penalty !== undefined ? el.penalty : el.bonus) + '</b></div>';
+    } else if (el.type === 'goal') {
+      html += '<div class="sub" style="margin-top:8px">数值 <b>≥' + el.req + '</b> 走进去即通关</div>';
+    } else if (el.type === 'hidden') {
+      html += '<div class="sub" style="margin-top:8px">数值 <b>≥' + el.req + '</b> 显形，显形后走进去通关</div>';
+    }
+    html += '<div class="sub" style="margin-top:10px;opacity:.72">长按只是查看，不会触发这个元素。</div>';
+    /* 顺带把这条公式用到的函数讲清楚（每个函数一句话原理 + 一个例子） */
+    var srcForHelp = (el.type === 'user') ? el.cond : el.expr;
+    if (srcForHelp) {
+      var list = E2.explain(srcForHelp);
+      if (list.length) {
+        html += '<div class="sub" style="margin-top:12px;border-top:1px solid rgba(255,255,255,.12);padding-top:10px">' +
+          '这条式子用到的算法：</div>';
+        for (var k = 0; k < list.length; k++) {
+          var h = list[k];
+          html += '<div style="margin-top:8px;font-size:12.5px;line-height:1.7">' +
+            '<code>' + h.name + '()</code> <b>' + h.title + '</b>' +
+            (h.eg ? '<br><span style="opacity:.85">例：' + h.eg + '</span>' : '') +
+            (h.desc ? '<br><span style="opacity:.7">' + h.desc + '</span>' : '') +
+            '</div>';
+        }
+      }
+    }
+    html += '<div class="row right"><button class="btn" data-act="close">知道了</button></div>';
+    openOverlay(html, function (card) {
+      card.querySelector('[data-act="close"]').onclick = closeOverlay;
+    }, true);
+  }
+
+  /* ── 元素生效后：把这一步的运算过程摊开 ───────────────────── */
+  function showSteps(el, before, after) {
+    if (!el || !el.expr || before === undefined) return;
+    var E2 = G.expr;
+    var tr = E2.trace(el.expr, before);
+    if (!tr) return;
+    var html = '<h1>运算过程</h1>';
+    html += '<div class="sub" style="margin-top:6px"><code>' + String(el.expr).replace(/</g, '&lt;') + '</code></div>';
+    html += '<div class="sub" style="margin-top:8px">代入 x = <b>' + E2.fmtNum(before) + '</b></div>';
+    html += '<ol style="margin:10px 0 0 18px;font-size:13px;line-height:1.85">';
+    for (var i = 0; i < tr.steps.length; i++) {
+      html += '<li><code>' + String(tr.steps[i].text).replace(/</g, '&lt;') + '</code> = <b>' +
+        E2.fmtNum(tr.steps[i].value) + '</b></li>';
+    }
+    html += '</ol>';
+    html += '<div class="sub" style="margin-top:10px">结果：<b>' + E2.fmtNum(before) + '</b> → <b style="color:#ffce5c">' +
+      E2.fmtNum(after !== undefined ? after : tr.value) + '</b></div>';
+    html += '<div class="row right"><button class="btn" data-act="close">知道了</button></div>';
+    openOverlay(html, function (card) {
+      card.querySelector('[data-act="close"]').onclick = closeOverlay;
+    }, true);
+  }
+
   /* ── 校验面板（开发用，按 V） ─────────────────────────── */
   function showVerify() {
-    openOverlay('<h1>关卡校验</h1><div class="sub" id="vf-status">正在构建 12 张地图并追踪最优解路线……</div>' +
+    openOverlay('<h1>关卡校验</h1><div class="sub" id="vf-status">正在构建 ' + G.levels.count() + ' 张地图并追踪最优解路线……</div>' +
       '<pre id="vf-out" style="max-height:52vh;overflow:auto;font-size:11.5px;line-height:1.6;white-space:pre-wrap;' +
       'background:rgba(0,0,0,.32);padding:12px;border-radius:12px;margin-top:12px"></pre>' +
       '<div class="row right"><button class="btn" data-act="close">关闭</button></div>',
@@ -432,7 +502,7 @@
           st.textContent = '耗时 ' + (Date.now() - t0) + ' ms　（✅ 可通关 / ❌ 有问题）';
           out.textContent = G.verify.formatReport(reports);
           var bad = reports.filter(function (r) { return !r.ok; }).length;
-          toast(bad ? (bad + ' 关有问题，看面板详情') : '12 关全部可通关 ✅', bad ? 'warn' : 'good');
+          toast(bad ? (bad + ' 关有问题，看面板详情') : (reports.length + ' 关全部可通关 ✅'), bad ? 'warn' : 'good');
         }, 60);
       }, true);
   }
@@ -597,6 +667,7 @@
     showIntro: showIntro, showFail: showFail, showWin: showWin,
     showLevels: showLevels, showCodex: showCodex, showVerify: showVerify,
     showArt: showArt, loadSavedArt: loadSavedArt, applyArt: applyArt,
+    showElement: showElement, showSteps: showSteps,
     closeOverlay: closeOverlay, isOverlayOpen: isOverlayOpen,
     syncMute: syncMute, flashHit: flashHit, iconCanvas: iconCanvas, sampleEl: sampleEl
   };
