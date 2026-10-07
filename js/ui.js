@@ -639,14 +639,31 @@
     hint.className = 'drop-hint hidden';
     hint.textContent = '松手 → 用这张图替换大肥鱼形象';
     dom.app.appendChild(hint);
-    var depth = 0;
-    var show = function (v) { hint.classList.toggle('hidden', !v); };
+    var depth = 0, hideTimer = null;
+    var show = function (v) {
+      hint.classList.toggle('hidden', !v);
+      if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+      /* 看门狗：真拖拽必然会跟一个 drop；等不到就自己收起来。
+         手机浏览器长按图片/文字也会发 dragenter，而 dragleave 常常不发，
+         没有这道保险提示框会永久卡在屏幕中央（挡住大肥鱼）。 */
+      if (v) hideTimer = setTimeout(function () { depth = 0; hint.classList.add('hidden'); }, 1800);
+    };
+    /* 只认"拖文件"：手机上的长按拖拽/选中文字 dataTransfer 里没有 Files */
+    var isFileDrag = function (e) {
+      var t = e.dataTransfer && e.dataTransfer.types;
+      if (!t) return false;
+      for (var i = 0; i < t.length; i++) if (t[i] === 'Files') return true;
+      return false;
+    };
     window.addEventListener('dragenter', function (e) {
-      if (!e.dataTransfer) return;
+      if (!isFileDrag(e)) return;
       e.preventDefault(); depth++; show(true);
     });
-    window.addEventListener('dragover', function (e) { if (e.dataTransfer) { e.preventDefault(); } });
+    window.addEventListener('dragover', function (e) { if (isFileDrag(e)) e.preventDefault(); });
     window.addEventListener('dragleave', function (e) { depth = Math.max(0, depth - 1); if (!depth) show(false); });
+    /* 手机兜底：任何触摸/点击都把提示收起来 */
+    window.addEventListener('touchstart', function () { depth = 0; show(false); }, { passive: true });
+    window.addEventListener('pointerdown', function () { if (depth === 0) show(false); });
     window.addEventListener('drop', function (e) {
       depth = 0; show(false);
       if (!e.dataTransfer) return;

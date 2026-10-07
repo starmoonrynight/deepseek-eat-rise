@@ -576,13 +576,72 @@
            '基础算法就够用：mod / digitSum / gcd / min / max',
            '走错了按 R 重开，这一关不值得硬救'],
     sol: [
-      'r0_rice2', 'door_r0_r4', 'door_r4_r8', 'door_r8_r12', 'door_r12_r13', 'r13_token1', 'door_r9_r13',
-      'door_r9_r10', 'door_r10_r11', 'r11_token1', 'r4_rice1', 'door_r6_r10', 'r6_claude1', 'r6_rice1',
-      'door_r10_r14', 'r9_rice1', 'r11_rice1', 'r14_rice1', 'r10_rice1', 'r13_rice1', 'r0_rice1', 'r8_rice1',
-      'r14_token1', 'door_r2_r6', 'r2_rice1', 'r4_bowl1', 'r2_bowl1', 'door_r5_r9', 'door_r1_r5', 'r1_rice1',
-      'r1_token1', 'door_r6_r7', 'r8_token1', 'r7_user1', 'r12_user1', 'door_r1_r2', 'door_r2_r3',
-      'r5_user1', 'door_r11_r15', 'r15_goal1'
+      'q0_rice1', 'q0_rice2', 'door_q0_q1', 'door_q0_q3', 'door_q1_q2', 'door_q2_q5', 'q3_rice1',
+      'q2_token1', 'q2_rice1', 'q3_user1', 'q1_rice1', 'q1_claude1', 'door_q3_q4', 'q4_bowl1', 'q4_claude1',
+      'q5_goal1'
     ]
   }));
+
+  /* ═══════════════════════════════════════════════════════════
+     第 11 关 · 高塔之门（第三次重做 · 手写版）
+     ─────────────────────────────────────────────────────────
+     前两版失败的原因：
+       · 第一版是手写大房间（14×14），房间被压到 5×5~10×10 之后路线失效；
+       · 第二版改用生成器，求解器能搜出顺序，但真实引擎复算不收敛
+         —— 生成器的元素集合与求解器的可达性模型和 verify.trace 有分叉。
+     这一版回到最稳的做法：手写小房间 + 低量级门 + 显式 noEnrich。
+       ① 每间 10×10（≤15 上限），六个房间排两排；
+       ② 门的量级全压到 10 以内，开局一定凑得出过门下限；
+       ③ noEnrich：元素集合每次构建完全一致，求解与复盘看到同一张图。
+     用到的算法只有基础集合（mod / min / max），符合"基础关"定位。
+     ═══════════════════════════════════════════════════════════ */
+  var r11 = L.gridRooms([2, 22, 42], [2, 22], [
+    { c: 0, r: 0, id: 'q0', name: '塔基', shape: 'rect', wh: [10, 10] },
+    { c: 1, r: 0, id: 'q1', name: '一层', shape: 'round', k: 3, wh: [10, 10] },
+    { c: 2, r: 0, id: 'q2', name: '二层', shape: 'rect', wh: [10, 10] },
+    { c: 0, r: 1, id: 'q3', name: '三层', shape: 'rect', wh: [10, 10] },
+    { c: 1, r: 1, id: 'q4', name: '四层', shape: 'round', k: 3, wh: [10, 10] },
+    { c: 2, r: 1, id: 'q5', name: '塔顶', shape: 'rect', wh: [10, 10] }
+  ]);
+  var e11 = L.autoEls(r11, {
+    q0: [['rice', 13], ['rice', 9]],
+    q1: [['claude', 2], ['rice', 15]],
+    q2: [['token', 'x - mod(x, 7) + 11'], ['rice', 17]],
+    q3: [['user', 'x > 45', 26, 8], ['rice', 19]],
+    q4: [['claude', 2], ['bowl', 12]],
+    q5: [['goal']]
+  });
+  G.levelSpecs.push({
+    id: 11, name: '高塔之门', subtitle: '第二幕 · 塔', tier: '进阶',
+    size: [78, 78], sizeClass: '>75x75', seed: 11011,
+    noEnrich: true,
+    hint: '六层石塔：门只把数值咬掉一小口，先攒后过',
+    intro: [
+      { key: 'l11_tower', new: true, title: '六层石塔', icon: 'door',
+        desc: '塔身六间石室，每层之间一扇门。门的量级都不大（最多扣 10），' +
+              '所以关键是顺序：倍率要留给后面的大额白饭。',
+        formula: '六层 · 六门' }
+    ],
+    tips: ['门的门槛是"刚好能过"的极限值，能过就立刻过',
+           'Claude 娘的倍率留到吃完大额白饭再吃最划算',
+           '过不去的门别硬撞，回头把别的房间吃了再来'],
+    fill: { type: 'rice', value: 1, density: 0.16, clearance: 1 },
+    rooms: r11,
+    links: [
+      L.link('q0', 'q1', { op: 'sub', amount: 5, label: '减法门' }),
+      L.link('q1', 'q2', { op: 'sub', amount: 8, label: '减法门' }),
+      L.link('q2', 'q5', { op: 'div', divisor: 2, label: '除法门' }),
+      L.link('q0', 'q3', { op: 'sub', amount: 6, label: '减法门' }),
+      L.link('q3', 'q4', { op: 'sub', amount: 9, label: '减法门' }),
+      L.link('q4', 'q5', { op: 'sub', amount: 10, label: '终点前门' })
+    ],
+    elements: e11,
+    start: { room: 'q0', at: [2, 2] },
+    solution: [
+      'q0_rice1', 'q0_rice2', 'door_q0_q1', 'door_q0_q3', 'door_q1_q2', 'door_q2_q5', 'q3_rice1',
+      'q2_token1', 'q2_rice1', 'q3_user1', 'q1_rice1', 'q1_claude1', 'door_q3_q4', 'q4_bowl1', 'q4_claude1',
+      'q5_goal1'
+    ]
+  });
 
 })(typeof window !== 'undefined' ? (window.DSF = window.DSF || {}) : (globalThis.DSF = globalThis.DSF || {}));

@@ -28,11 +28,8 @@
       if (!byId[s.id]) order.push(s.id);
       byId[s.id] = s;
     });
-    /* 暂时下架名单。
-       第 11 关：原版房间缩到 5×5~10×10 后搜不到通路；用生成器重建后
-       求解器能搜出顺序，但真实引擎复算仍不收敛（求解器模型与真实寻路不一致），
-       所以继续下架，等把求解器的可达性模型修好再放出来。 */
-    var DISABLED = { 11: true };
+    /* 暂时下架名单（空着表示全部关卡都在） */
+    var DISABLED = {};
     specs = order.map(function (id) { return byId[id]; })
       .filter(function (s) { return !DISABLED[s.id]; })
       .sort(function (a, b) { return a.id - b.id; });

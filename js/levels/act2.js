@@ -555,12 +555,9 @@
     ],
     start: { room: 'r0', at: [1, 1] },
     solution: [
-      'r0_rice2', 'door_r0_r4', 'door_r4_r8', 'door_r8_r12', 'door_r12_r13', 'r13_token1', 'door_r9_r13',
-      'door_r9_r10', 'door_r10_r11', 'r11_token1', 'r4_rice1', 'door_r6_r10', 'r6_claude1', 'r6_rice1',
-      'door_r10_r14', 'r9_rice1', 'r11_rice1', 'r14_rice1', 'r10_rice1', 'r13_rice1', 'r0_rice1', 'r8_rice1',
-      'r14_token1', 'door_r2_r6', 'r2_rice1', 'r4_bowl1', 'r2_bowl1', 'door_r5_r9', 'door_r1_r5', 'r1_rice1',
-      'r1_token1', 'door_r6_r7', 'r8_token1', 'r7_user1', 'r12_user1', 'door_r1_r2', 'door_r2_r3',
-      'r5_user1', 'door_r11_r15', 'r15_goal1'
+      'q0_rice1', 'q0_rice2', 'door_q0_q1', 'door_q0_q3', 'door_q1_q2', 'door_q2_q5', 'q3_rice1',
+      'q2_token1', 'q2_rice1', 'q3_user1', 'q1_rice1', 'q1_claude1', 'door_q3_q4', 'q4_bowl1', 'q4_claude1',
+      'q5_goal1'
     ]
   });
 
