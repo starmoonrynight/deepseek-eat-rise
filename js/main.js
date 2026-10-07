@@ -472,7 +472,7 @@
     G.input.setPadVisible(touch);
     G.ui.setHint(touch
       ? '按住方向键连续移动 · 滑动走一格 · 左下角是小地图'
-      : '按住方向键 / WASD 连续移动 · 点相邻格走一格 · Z 切全图 · R 重开 · U 撤销 · C 图鉴');
+      : '按住方向键 / WASD 连续移动 · 点相邻格走一格 · Z 切全图 · R 重开 · C 图鉴');
 
     G.input.init({
       onAction: function (act) {
