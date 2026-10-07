@@ -1,0 +1,19 @@
+{
+  "name": "blue-fat-fish-eats-rice",
+  "version": "1.0.0",
+  "private": true,
+  "description": "蓝色大肥鱼吃大白饭 —— 纯前端数值解谜网页游戏（零依赖、零构建）",
+  "scripts": {
+    "verify": "node tools/verify-levels.mjs",
+    "verify:one": "node tools/verify-levels.mjs",
+    "dump": "node tools/verify-levels.mjs --dump",
+    "smoke": "node tools/smoke.mjs",
+    "test": "node tools/verify-levels.mjs && node tools/smoke.mjs && node tools/build-single.mjs && node tools/smoke.mjs --dist dist/index.html",
+    "build": "node tools/build-single.mjs",
+    "art": "python tools/prep-art.py",
+    "serve": "node tools/serve.mjs",
+    "start": "node tools/serve.mjs"
+  },
+  "keywords": ["game", "puzzle", "canvas", "github-pages", "deepseek", "claude"],
+  "license": "MIT"
+}

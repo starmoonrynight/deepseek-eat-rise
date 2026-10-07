@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#0b1220" />
+<meta name="description" content="蓝色大肥鱼吃大白饭 —— 一个纯前端数值解谜游戏。吃掉大白饭、改写 token、和 Claude 娘倍乘、穿过中转站门。" />
+<title>蓝色大肥鱼吃大白饭</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+  <canvas id="stage"></canvas>
+
+  <!-- ── 顶部 HUD ───────────────────────────────────────────── -->
+  <header id="hud">
+    <div class="hud-left">
+      <button id="btn-levels" class="ico" title="关卡选择 (L)">☰</button>
+      <div class="level-tag">
+        <b id="level-no">01</b>
+        <span id="level-name">白饭初尝</span>
+      </div>
+    </div>
+
+    <div class="hud-center">
+      <div id="value-box" class="value-box">
+        <span class="vlabel">数值</span>
+        <span id="value-num">1</span>
+        <span id="bowl-chip" class="bowl-chip hidden">🥣 铁盆</span>
+      </div>
+      <div id="value-sub" class="value-sub">初始值 1</div>
+    </div>
+
+    <div class="hud-right">
+      <button id="btn-reset" class="ico" title="重开 (R)">⟳</button>
+      <button id="btn-codex" class="ico" title="元素图鉴 (C)">📖</button>
+      <button id="btn-zoom" class="ico" title="全图 / 跟随 (Z)">⤢</button>
+      <button id="btn-mute" class="ico" title="静音 (M)">🔊</button>
+    </div>
+  </header>
+
+  <!-- ── 画布上的浮层：气泡 / 提示 / 判定范围弹窗 ─────────────── -->
+  <div id="canvas-layer"></div>
+
+  <!-- ── 移动端方向键 ──────────────────────────────────────── -->
+  <div id="pad" class="pad">
+    <button class="pad-btn up"    data-dir="up">▲</button>
+    <button class="pad-btn left"  data-dir="left">◀</button>
+    <button class="pad-btn down"  data-dir="down">▼</button>
+    <button class="pad-btn right" data-dir="right">▶</button>
+  </div>
+
+  <!-- ── 通用弹窗 ──────────────────────────────────────────── -->
+  <div id="overlay" class="overlay hidden">
+    <div id="overlay-card" class="card"></div>
+  </div>
+
+  <div id="toast-layer" class="toast-layer"></div>
+  <footer id="hint-bar" class="hint-bar"></footer>
+</div>
+
+<!-- 依赖顺序：底层 → 上层，全部为传统 script，file:// 直接双击也能跑 -->
+<script src="js/expr.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/map.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/render.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/levels/act1.js"></script>
+<script src="js/levels/act2.js"></script>
+<!-- verify.js 必须在 levels.js 之前：关卡加载时要靠它按最优解反推终点门槛 -->
+<script src="js/verify.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/input.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

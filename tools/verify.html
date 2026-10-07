@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>关卡校验 · 蓝色大肥鱼吃大白饭</title>
+<style>
+  :root { --bg:#080e1a; --ink:#e8f0ff; --dim:#8fa4c8; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:20px; background:radial-gradient(120% 90% at 50% 0%,#142544,#080e1a 70%);
+         color:var(--ink); font:14px/1.7 "PingFang SC","Microsoft YaHei UI","Noto Sans SC",system-ui,sans-serif; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--dim); font-size:13px; margin-bottom:14px; }
+  .bar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  button { padding:9px 16px; border-radius:10px; border:1px solid rgba(255,255,255,.16); cursor:pointer;
+           background:linear-gradient(180deg,#a9d0ff,#4d9bff); color:#071022; font-weight:700; font-family:inherit; }
+  button.ghost { background:rgba(255,255,255,.06); color:var(--ink); }
+  pre { background:rgba(0,0,0,.4); border:1px solid rgba(122,170,255,.2); border-radius:12px;
+        padding:14px; overflow:auto; font-size:12.5px; line-height:1.65; white-space:pre-wrap; max-height:70vh; }
+  .ok { color:#48e5a3 } .bad { color:#ff5d6c }
+</style>
+</head>
+<body>
+<h1>关卡校验器</h1>
+<div class="sub">
+  和游戏内按 <b>V</b> 完全同一套校验：规模下限 / 元素密度 10%~30% / 门分隔两个房间 / 门不相邻 /
+  门运算一定减少 / 表达式合法 / 最优解路线真的能通关 / 终点门槛 = 该关最优值。
+</div>
+<div class="bar">
+  <button id="run">开始校验 12 关</button>
+  <button class="ghost" id="dump">导出当前关的二维数组 A / B</button>
+  <button class="ghost" id="clear">清空</button>
+</div>
+<pre id="out">点「开始校验」……</pre>
+
+<script src="../js/expr.js"></script>
+<script src="../js/rules.js"></script>
+<script src="../js/map.js"></script>
+<script src="../js/engine.js"></script>
+<script src="../js/levels/act1.js"></script>
+<script src="../js/levels/act2.js"></script>
+<script src="../js/verify.js"></script>
+<script src="../js/levels.js"></script>
+<script>
+(function () {
+  var out = document.getElementById('out');
+  function line(s) { out.textContent += s + '\n'; }
+  document.getElementById('run').onclick = function () {
+    out.textContent = '校验中……\n';
+    setTimeout(function () {
+      var t0 = Date.now();
+      try {
+        var reports = DSF.levels.checkAll();
+        out.textContent = DSF.verify.formatReport(reports) + '\n耗时 ' + (Date.now() - t0) + ' ms\n';
+        console.log(reports);
+        window.__reports = reports;
+      } catch (e) {
+        out.textContent = '校验器异常：' + e.message + '\n' + e.stack;
+      }
+    }, 30);
+  };
+  document.getElementById('dump').onclick = function () {
+    var id = parseInt(prompt('要导出第几关？(1~12)', '1') || '1', 10);
+    var lv;
+    try { lv = DSF.levels.get(id); } catch (e) { out.textContent = '构建失败：' + e.message; return; }
+    out.textContent =
+      '# 第 ' + id + ' 关 ' + lv.name + '　' + lv.w + '×' + lv.h +
+      '　元素 ' + lv.elements.length + '　门 ' + lv.doors.length + '\n\n' +
+      '== 二维数组 A（# 墙 / . 地板 / 空格 虚空）==\n' +
+      lv.A.map(function (r, i) { return String(i).padStart(3) + ' ' + r; }).join('\n') + '\n\n' +
+      '== 二维数组 B（元素注释）==\n' +
+      lv.B.map(function (r, i) { return String(i).padStart(3) + ' ' + r; }).join('\n') + '\n\n' +
+      '== legend ==\n' + Object.keys(lv.legend).map(function (ch) {
+        var h = lv.legend[ch][0];
+        return '  ' + ch + ' ×' + lv.legend[ch].length + '  ' + h.type +
+          (h.isDoor ? ' op=' + h.op + ' req=' + h.req : '') +
+          (h.type === 'token' ? ' expr=' + h.expr : '') +
+          (h.type === 'claude' ? ' ×' + h.factor : '') +
+          (h.filler ? '  (填充白饭)' : '');
+      }).join('\n') + '\n\n' +
+      '== 最优解路线 ==\n' +
+      (function () {
+        var t = DSF.verify.trace(lv);
+        return t.records.map(function (r) { return '  ' + r.id + '  ' + r.before + ' → ' + r.after; }).join('\n') +
+          '\n  结果：' + t.status + '　最终数值 ' + t.value +
+          (t.errors.length ? '\n  错误：' + t.errors.join('；') : '') +
+          (t.warnings.length ? '\n  警告：' + t.warnings.join('；') : '');
+      })();
+  };
+  document.getElementById('clear').onclick = function () { out.textContent = ''; };
+  document.getElementById('run').click();
+})();
+</script>
+</body>
+</html>
